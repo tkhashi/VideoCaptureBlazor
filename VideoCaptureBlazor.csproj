@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoCaptureBlazor.OpenCvSharp\VideoCaptureBlazor.OpenCvSharp.csproj" />
+    <ProjectReference Include="..\VideoCaptureBlazor.OpenCvSharp\VideoCaptureBlazor.CvElement.csproj" />
   </ItemGroup>
 
 </Project>

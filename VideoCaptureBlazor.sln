@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoCaptureBlazor", "VideoCaptureBlazor.csproj", "{56B98D9B-524B-4A05-854F-836C83607700}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoCaptureBlazor.OpenCvSharp", "..\VideoCaptureBlazor.OpenCvSharp\VideoCaptureBlazor.OpenCvSharp.csproj", "{CBB9F58C-68D3-4282-8AD1-60D6C91859D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoCaptureBlazor.CvElement", "..\VideoCaptureBlazor.OpenCvSharp\VideoCaptureBlazor.CvElement.csproj", "{CBB9F58C-68D3-4282-8AD1-60D6C91859D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
