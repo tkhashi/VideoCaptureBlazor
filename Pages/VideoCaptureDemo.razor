@@ -1,0 +1,23 @@
+﻿@page "/VideoCaptureDemo"
+@using SpawnDev.BlazorJS.JSObjects
+@using OpenCvSharp;
+
+<PageTitle>Video Capture Demo</PageTitle>
+
+<h1>OpenCVSharp4 Video Capture Demo</h1>
+<p>
+    This demo runs a Haar Cascade Classifier on either a webcam or a video clip.<br />
+    <h4>Source Code</h4>
+    <a href="https://github.com/LostBeard/SpawnDev.BlazorJS.OpenCVSharp4/blob/main/SpawnDev.BlazorJS.OpenCVSharp4.Demo/Pages/VideoCaptureDemo.razor">VideoCaptureDemo.razor</a><br />
+    <a href="https://github.com/LostBeard/SpawnDev.BlazorJS.OpenCVSharp4/blob/main/SpawnDev.BlazorJS.OpenCVSharp4.Demo/Pages/VideoCaptureDemo.razor.cs">VideoCaptureDemo.razor.cs</a><br />
+</p>
+<button @onclick=@PlayUserMedia>Source: Webcam</button>
+<button @onclick=@PlayRemoteVideo>Source: Video URL</button>
+<br />
+<br />
+<canvas @ref=canvasSrcRef style="border: 1px solid grey;"></canvas>
+<br />
+
+@code {
+  
+}

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoCaptureBlazor", "VideoCaptureBlazor.csproj", "{56B98D9B-524B-4A05-854F-836C83607700}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoCaptureBlazor.OpenCvSharp", "..\VideoCaptureBlazor.OpenCvSharp\VideoCaptureBlazor.OpenCvSharp.csproj", "{CBB9F58C-68D3-4282-8AD1-60D6C91859D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56B98D9B-524B-4A05-854F-836C83607700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B98D9B-524B-4A05-854F-836C83607700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56B98D9B-524B-4A05-854F-836C83607700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56B98D9B-524B-4A05-854F-836C83607700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBB9F58C-68D3-4282-8AD1-60D6C91859D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBB9F58C-68D3-4282-8AD1-60D6C91859D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBB9F58C-68D3-4282-8AD1-60D6C91859D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBB9F58C-68D3-4282-8AD1-60D6C91859D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EA5D5E03-CE6A-412B-AAF2-C1EB301DCB06}
+	EndGlobalSection
+EndGlobal
