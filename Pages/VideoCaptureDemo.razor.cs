@@ -2,7 +2,9 @@
 using OpenCvSharp;
 using SpawnDev.BlazorJS.JSObjects;
 using SpawnDev.BlazorJS.Toolbox;
+using VideoCaptureBlazor.CvElement;
 using Timer = System.Timers.Timer;
+using VideoCapture = VideoCaptureBlazor.CvElement.VideoCapture;
 
 namespace VideoCaptureBlazor.Pages
 {
