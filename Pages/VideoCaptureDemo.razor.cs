@@ -3,6 +3,7 @@ using OpenCvSharp;
 using SpawnDev.BlazorJS.JSObjects;
 using SpawnDev.BlazorJS.Toolbox;
 using VideoCaptureBlazor.CvElement;
+using Array = System.Array;
 using Timer = System.Timers.Timer;
 using VideoCapture = VideoCaptureBlazor.CvElement.VideoCapture;
 
@@ -10,56 +11,66 @@ namespace VideoCaptureBlazor.Pages
 {
     public partial class VideoCaptureDemo : IDisposable
     {
-        class FaceFeature
+        private class FaceFeature
         {
+            public FaceFeature()
+            {
+            }
+
+            public FaceFeature(Rect face, Rect[] eyes)
+            {
+                Face = face;
+                Eyes = eyes;
+            }
+
             public Rect Face { get; set; }
-            public Rect[] Eyes { get; set; } = new Rect[0];
+            public Rect[] Eyes { get; set; } = Array.Empty<Rect>();
         }
 
         [Inject]
-        MediaDevicesService MediaDevicesService { get; set; }
+        private MediaDevicesService MediaDevicesService { get; set; }
 
         [Inject]
-        HttpClient HttpClient { get; set; }
+        private HttpClient HttpClient { get; set; }
 
-        ElementReference canvasSrcRef;
-        Timer timer = new Timer();
-        VideoCapture? videoCapture;
-        HTMLCanvasElement? canvasSrcEl;
-        CanvasRenderingContext2D? canvasSrcCtx;
-        MediaStream? mediaStream = null;
-        Mat? src;
-        CascadeClassifier? face_cascade = null;
+        private ElementReference _canvasSrcRef;
+        private readonly Timer _timer = new();
+        private VideoCapture? _videoCapture;
+        private HTMLCanvasElement? _canvasSrcEl;
+        private CanvasRenderingContext2D? _canvasSrcCtx;
+        private MediaStream? _mediaStream;
+        private Mat? _src;
+        private CascadeClassifier? _faceCascade;
 
-        CascadeClassifier? eyes_cascade = null;
+        private CascadeClassifier? _eyesCascade;
 
         // Video source
         // https://github.com/intel-iot-devkit/sample-videos
-        string TestVideo = "test-videos/face-demographics-walking-and-pause.mp4";
-        bool beenInit = false;
+        private const string TestVideo = "test-videos/face-demographics-walking-and-pause.mp4";
+        private bool _beenInit;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             await base.OnAfterRenderAsync(firstRender);
-            if (!beenInit)
+            if (!_beenInit)
             {
-                beenInit = true;
-                face_cascade = await LoadCascadeClassifier("haarcascades/haarcascade_frontalface_default.xml");
-                eyes_cascade = await LoadCascadeClassifier("haarcascades/haarcascade_eye.xml");
-                canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
-                canvasSrcCtx = canvasSrcEl.Get2DContext();
-                videoCapture = new VideoCapture();
-                videoCapture.Video.CrossOrigin = "anonymous"; // allows videos from other domains using cors
-                timer.Elapsed += Timer_Elapsed;
-                timer.Interval = 1000d / 60d;
-                timer.Enabled = true;
+                _beenInit = true;
+                _faceCascade = await LoadCascadeClassifier("haarcascades/haarcascade_frontalface_default.xml");
+                _eyesCascade = await LoadCascadeClassifier("haarcascades/haarcascade_eye.xml");
+                _canvasSrcEl = new HTMLCanvasElement(_canvasSrcRef);
+                _canvasSrcCtx = _canvasSrcEl.Get2DContext();
+                _videoCapture = new VideoCapture();
+                _videoCapture.Video.CrossOrigin = "anonymous"; // allows videos from other domains using cors
+                _timer.Elapsed += Timer_Elapsed;
+                _timer.Interval = 1000d / 60d;
+                _timer.Enabled = true;
             }
         }
 
-        async Task<CascadeClassifier> LoadCascadeClassifier(string url)
+        private async Task<CascadeClassifier> LoadCascadeClassifier(string url)
         {
             var text = await HttpClient.GetStringAsync(url);
-            System.IO.File.WriteAllText("tmp.xml", text);
+            await System.IO.File.WriteAllTextAsync("tmp.xml", text);
             var cascadeClassifier = new CascadeClassifier("tmp.xml");
             System.IO.File.Delete("tmp.xml");
             return cascadeClassifier;
@@ -68,118 +79,114 @@ namespace VideoCaptureBlazor.Pages
         // https://github.com/opencv/opencv/tree/master/rgbaBytes/haarcascades
         // https://github.com/VahidN/OpenCVSharp-Samples/blob/master/OpenCVSharpSample15/Program.cs
         // https://www.tech-quantum.com/have-fun-with-webcam-and-opencv-in-csharp-part-2/
-        List<FaceFeature> FaceDetect(Mat image)
+        private List<FaceFeature> FaceDetect(Mat image)
         {
             var features = new List<FaceFeature>();
             var faces = DetectFaces(image);
             foreach (var item in faces)
             {
                 // Get face region
-                using Mat face_roi = image[item];
+                using var faceRoi = image[item];
                 // Detect eyes in the face region
-                Rect[] eyes = DetectEyes(face_roi);
+                var eyes = DetectEyes(faceRoi);
                 // Add to results
-                features.Add(new FaceFeature()
-                {
-                    Face = item,
-                    Eyes = eyes
-                });
+                features.Add(new FaceFeature(face: item, eyes: eyes));
             }
 
             return features;
         }
 
-        void MarkFeatures(Mat image, List<FaceFeature> features)
+        private static void MarkFeatures(Mat image, List<FaceFeature> features)
         {
-            foreach (FaceFeature feature in features)
+            foreach (var feature in features)
             {
                 Cv2.Rectangle(image, feature.Face, new Scalar(0, 255, 0), thickness: 1);
-                using var face_region = image[feature.Face];
+                using var faceRegion = image[feature.Face];
                 foreach (var eye in feature.Eyes)
                 {
-                    Cv2.Rectangle(face_region, eye, new Scalar(255, 0, 0), thickness: 1);
+                    Cv2.Rectangle(faceRegion, eye, new Scalar(255, 0, 0), thickness: 1);
                 }
             }
         }
 
-        Rect[] DetectEyes(Mat image)
+        private Rect[] DetectEyes(Mat image)
         {
-            Rect[] faces = eyes_cascade == null ? new Rect[0] : eyes_cascade.DetectMultiScale(image, 1.3, 5);
+            var faces = _eyesCascade == null ? Array.Empty<Rect>() : _eyesCascade.DetectMultiScale(image, 1.3, 5);
             return faces;
         }
 
-        Rect[] DetectFaces(Mat image)
+        private Rect[] DetectFaces(Mat image)
         {
-            Rect[] faces = face_cascade == null ? new Rect[0] : face_cascade.DetectMultiScale(image, 1.3, 5);
+            var faces = _faceCascade == null ? Array.Empty<Rect>() : _faceCascade.DetectMultiScale(image, 1.3, 5);
             return faces;
         }
 
-        void StopPlaying()
+        private void StopPlaying()
         {
-            if (videoCapture == null) return;
-            videoCapture.Video.Src = null;
-            videoCapture.Video.SrcObject = null;
-            if (mediaStream != null)
-            {
-                mediaStream.Dispose();
-                mediaStream = null;
-            }
+            if (_videoCapture == null) return;
+            _videoCapture.Video.Src = null;
+            _videoCapture.Video.SrcObject = null;
+
+            if (_mediaStream == null) return;
+            _mediaStream.Dispose();
+            _mediaStream = null;
         }
 
-        async Task PlayRemoteVideo()
+        private async Task PlayRemoteVideo()
         {
-            if (videoCapture == null) return;
+            if (_videoCapture == null) return;
             try
             {
                 StopPlaying();
-                videoCapture.Video.Src = TestVideo;
+                _videoCapture.Video.Src = TestVideo;
             }
             catch
             {
+                // ignored
             }
         }
 
-        async Task PlayUserMedia()
+        private async Task PlayUserMedia()
         {
-            if (videoCapture == null) return;
+            if (_videoCapture == null) return;
             try
             {
                 StopPlaying();
                 await MediaDevicesService.UpdateDeviceList(true);
-                mediaStream = await MediaDevicesService.MediaDevices.GetUserMedia();
-                videoCapture.Video.SrcObject = mediaStream;
+                _mediaStream = await MediaDevicesService.MediaDevices.GetUserMedia();
+                _videoCapture.Video.SrcObject = _mediaStream;
             }
             catch
             {
+                // ignored
             }
         }
 
         private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            if (videoCapture == null) return;
-            if (src == null) src = new Mat();
-            var succ = videoCapture.Read(src);
+            if (_videoCapture == null) return;
+            _src ??= new Mat();
+            var succ = _videoCapture.Read(_src);
             if (!succ) return;
-            var res = FaceDetect(src);
-            MarkFeatures(src, res);
-            src.DrawOnCanvas(canvasSrcCtx, true);
+            var res = FaceDetect(_src);
+            MarkFeatures(_src, res);
+            _src.DrawOnCanvas(_canvasSrcCtx, true);
         }
 
         public void Dispose()
         {
-            if (beenInit)
-            {
-                beenInit = false;
-                timer.Dispose();
-                StopPlaying();
-                videoCapture?.Dispose();
-                videoCapture = null;
-                face_cascade?.Dispose();
-                eyes_cascade?.Dispose();
-                canvasSrcEl?.Dispose();
-                canvasSrcCtx?.Dispose();
-                src?.Dispose();
-            }
+            if (!_beenInit) return;
+
+            _beenInit = false;
+            _timer.Dispose();
+            StopPlaying();
+            _videoCapture?.Dispose();
+            _videoCapture = null;
+            _faceCascade?.Dispose();
+            _eyesCascade?.Dispose();
+            _canvasSrcEl?.Dispose();
+            _canvasSrcCtx?.Dispose();
+            _src?.Dispose();
         }
     }
 }

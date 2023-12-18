@@ -12,25 +12,25 @@
     <a href="https://github.com/LostBeard/SpawnDev.BlazorJS.OpenCVSharp4/blob/main/SpawnDev.BlazorJS.OpenCVSharp4.Demo/Pages/Index.razor">Index.razor</a><br />
 </p>
 
-<canvas style="zoom: 50%; border: 1px solid grey;" @ref=canvasSrcRef></canvas>
-<canvas style="zoom: 50%; border: 1px solid grey;" @ref=canvasDestRef></canvas>
+<canvas style="zoom: 50%; border: 1px solid grey;" @ref="_canvasSrcRef"></canvas>
+<canvas style="zoom: 50%; border: 1px solid grey;" @ref="_canvasDestRef"></canvas>
 
 
 @code {
-    ElementReference canvasSrcRef;
-    ElementReference canvasDestRef;
-    string TestImage = "https://i.imgur.com/WOZagma.jpeg";
+    ElementReference _canvasSrcRef;
+    ElementReference _canvasDestRef;
+    private const string TestImage = "https://i.imgur.com/WOZagma.jpeg";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            using var canvasSrcEl = new HTMLCanvasElement(canvasSrcRef);
+            using var canvasSrcEl = new HTMLCanvasElement(_canvasSrcRef);
             using var canvasSrcCtx = canvasSrcEl.Get2DContext();
-            using var canvasDestEl = new HTMLCanvasElement(canvasDestRef);
+            using var canvasDestEl = new HTMLCanvasElement(_canvasDestRef);
             using var canvasDestCtx = canvasDestEl.Get2DContext();
             using var src = new Mat();
-            await src.LoadImageURL(TestImage);
+            await src.LoadImageUrl(TestImage);
             src.DrawOnCanvas(canvasSrcCtx, true);
             using var dst = new Mat();
             Cv2.Canny(src, dst, 50, 200);
