@@ -1,0 +1,20 @@
+﻿@page "/LocalVideoCaptureDemo"
+
+<PageTitle>Local Video Capture</PageTitle>
+
+<h1>OpenCVSharp4 Local Video Capture Demo</h1>
+
+<InputFile class="form-control mb-3" OnChange="@UploadVideo" accept="video/*" />
+
+<br />
+<canvas @ref="_canvasSrcRef" style="border: 1px solid grey;"></canvas>
+<br />
+
+@code {
+
+    private string _videoUri;
+
+    private void UploadVideo()
+    {
+    } 
+}
